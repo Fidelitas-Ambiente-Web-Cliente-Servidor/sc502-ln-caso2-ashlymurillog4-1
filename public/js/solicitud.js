@@ -20,7 +20,6 @@ $(function () {
                         <td>${sol.id}</td>
                         <td>${sol.taller}</td>
                         <td>${sol.usuario}</td>
-                        <td>${sol.fecha_solicitud}</td>
                         <td>
                             <button class="aprobar" data-id="${sol.id}">Aprobar</button>
                             <button class="rechazar" data-id="${sol.id}">Rechazar</button>

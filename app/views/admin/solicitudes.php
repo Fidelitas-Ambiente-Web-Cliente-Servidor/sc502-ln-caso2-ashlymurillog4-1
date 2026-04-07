@@ -36,8 +36,6 @@
                         <th>ID</th>
                         <th>Taller</th>
                         <th>Solicitante</th>
-                        <th>Usuario</th>
-                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
