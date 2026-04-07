@@ -25,28 +25,58 @@ class TallerController
         }
         require __DIR__ . '/../views/taller/listado.php';
     }
-    
+
     public function getTalleresJson()
     {
         if (!isset($_SESSION['id'])) {
             echo json_encode([]);
             return;
         }
-        
+
         $talleres = $this->tallerModel->getAllDisponibles();
         header('Content-Type: application/json');
         echo json_encode($talleres);
     }
-    
+
     public function solicitar()
     {
         if (!isset($_SESSION['id'])) {
-            echo json_encode(['success' => false, 'error' => 'Debes iniciar sesión']);
+            echo json_encode(['success' => false, 'message' => 'Debe iniciar sesión']);
             return;
         }
-        
-        $tallerId = $_POST['taller_id'] ?? 0;
+
+        $tallerId = $_POST['taller_id'];
         $usuarioId = $_SESSION['id'];
 
+        // validar si està disponible
+        $taller = $this->tallerModel->getById($tallerId);
+
+        if ($taller['cupo_disponible'] <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No hay cupo disponible'
+            ]);
+            return;
+        }
+
+        // validar si está duplicado
+        if ($this->solicitudModel->existeSolicitud($tallerId, $usuarioId)) {
+            echo json_encode(['success' => false, 'message' => 'Ya solicitó este taller']);
+            return;
+        }
+        $taller = $this->tallerModel->getById($tallerId);
+
+        if ($taller['cupo_disponible'] <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No hay cupo disponible'
+            ]);
+            return;
+        }
+        if ($this->solicitudModel->crear($tallerId, $usuarioId)) {
+            echo json_encode(['success' => true, 'message' => 'Solicitud enviada']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al solicitar']);
+        }
     }
 }
